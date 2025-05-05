@@ -1,0 +1,42 @@
+version: 1
+disable_existing_loggers: true
+
+formatters:
+  simple:
+    format: '[%(levelname)-8s]: %(message)s - %(name)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+  # file:
+  #   class: logging.FileHandler
+  #   level: DEBUG
+  #   filename: logs/test.log
+
+root:
+    level: NOTSET
+    handlers: [console]
+    propogate: yes
+
+loggers:
+  tests:
+    level: DEBUG
+    propagate: yes
+
+# ---------- ATB
+  tests.atb:
+    level: DEBUG
+    propagate: yes
+
+# ---------- TIME
+  tests.atb.time:
+    level: DEBUG
+    propagate: yes
+
+  tests.atb.time.sample:
+    level: DEBUG
+    propagate: yes
