@@ -12,7 +12,7 @@ Decorators list:
 from functools import wraps
 from time import time
 
-from atb.math.statistics import OnlineStatistics
+from arthoolbox.math.statistics import OnlineStatistics
 
 
 def sample(_f=None, *, time_function=time.time):
@@ -32,7 +32,7 @@ def sample(_f=None, *, time_function=time.time):
     ---------
     last_call: float
         The last __get_time() returned value use to compute measurements
-    period: atb.math.statistics.OnlineStatistics
+    period: arthoolbox.math.statistics.OnlineStatistics
         OnlineStatistics object use to compute mean and variance online
 
     Parameters

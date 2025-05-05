@@ -28,15 +28,15 @@ loggers:
     propagate: yes
 
 # ---------- ATB
-  tests.atb:
+  tests.arthoolbox.
     level: DEBUG
     propagate: yes
 
 # ---------- TIME
-  tests.atb.time:
+  tests.arthoolbox.time:
     level: DEBUG
     propagate: yes
 
-  tests.atb.time.sample:
+  tests.arthoolbox.time.sample:
     level: DEBUG
     propagate: yes

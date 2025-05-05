@@ -2,7 +2,7 @@
 import statistics as st, math
 from . import log as parent_log
 
-import atb.math.statistics as arthstats
+import arthoolbox.math.statistics as arthstats
 
 module_log = parent_log.getChild('statistics')
 
