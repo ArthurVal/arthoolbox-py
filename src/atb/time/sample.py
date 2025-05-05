@@ -32,7 +32,7 @@ def sample(_f=None, *, time_function=time.time):
     ---------
     last_call: float
         The last __get_time() returned value use to compute measurements
-    period: arthoolbox.math.statistics.OnlineStatistics
+    period: atb.math.statistics.OnlineStatistics
         OnlineStatistics object use to compute mean and variance online
 
     Parameters
