@@ -22,9 +22,10 @@ from typing import (
 
 T = TypeVar("T")
 U = TypeVar("U")
+V = TypeVar("V")
 
 
-class WithDescription[T]:
+class WithDescription:
     """Decorator that give the possibility to implement a better/custom repr().
 
     May be usefull when declaring runtime functions/lambdas and give them a
@@ -731,3 +732,70 @@ def Decorate(
         ),
         do=before,
     )
+
+
+def Add(k: T, *, left: bool = False) -> Callable[[U], V]:
+    """Callable that returns `v + k`.
+
+    Parameters
+    ----------
+    k: T
+      Constant value used for the addition
+    left: bool
+      Indicates if we wish to perform `k + v` instead of `v + k`
+
+    Returns
+    -------
+    Callable[[U], V]
+      A callable returning 'v + k' or 'k + v'.
+    """
+    if left:
+        return WithDescription(f=lambda v: k + v, descr=f"Get added to {k!r}")
+    else:
+        return WithDescription(f=lambda v: v + k, descr=f"Add {k!r}")
+
+
+def Sub(k: T, *, left: bool = False) -> Callable[[U], V]:
+    """Callable that returns `v - k`/k - v`.
+
+    Parameters
+    ----------
+    k: T
+      Constant value used for the substraction
+    left: bool
+      Indicates if we wish to perform `k - v` instead of `v - k`
+
+    Returns
+    -------
+    Callable[[U], V]
+      A callable returning 'v - k' or 'k - v'.
+    """
+    if left:
+        return WithDescription(
+            f=lambda v: k - v, descr=f"Get subtracted to {k!r}"
+        )
+    else:
+        return WithDescription(f=lambda v: v - k, descr=f"Subtracts {k!r}")
+
+
+def Mul(k: T, *, left: bool = False) -> Callable[[U], V]:
+    """Callable that returns `v * k`/k * v`.
+
+    Parameters
+    ----------
+    k: T
+      Constant value used for the mulstraction
+    left: bool
+      Indicates if we wish to perform `k * v` instead of `v * k`
+
+    Returns
+    -------
+    Callable[[U], V]
+      A callable returning 'v * k' or 'k * v'.
+    """
+    if left:
+        return WithDescription(
+            f=lambda v: k * v, descr=f"Left multiply by {k!r}"
+        )
+    else:
+        return WithDescription(f=lambda v: v * k, descr=f"Multiply by {k!r}")
