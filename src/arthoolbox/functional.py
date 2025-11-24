@@ -12,7 +12,6 @@ from functools import (
 )
 from typing import (
     Any,
-    Never,
     NoReturn,
     Text,
     Tuple,
@@ -80,7 +79,7 @@ def DoNothing() -> Callable[[...], NoReturn]:
 
 def ForwardArgsN(
     *indices: int,
-) -> Callable[[...], Union[Tuple[...], Any, Generator[Any]]]:
+) -> Callable[[...], Union[Tuple[Any, ...], Any, Generator[Any]]]:
     """Creates a functor that forward args.
 
     Parameters
@@ -97,7 +96,7 @@ def ForwardArgsN(
 
     Returns
     -------
-    Callable[[...], Union[Tuple[...], Any, Generator[Any]]]
+    Callable[[...], Union[Tuple[Any, ...], Any, Generator[Any]]]
       A callable that returns an args filter, based on the indices given.
     """
 
@@ -115,7 +114,7 @@ def ForwardArgsN(
             )
         )
 
-    def __impl_fwd_all_args(*args) -> Tuple[...]:
+    def __impl_fwd_all_args(*args) -> Tuple[Any, ...]:
         return args
 
     def __impl_fwd_one_arg(*args) -> Any:
@@ -143,7 +142,7 @@ def ForwardArgsN(
 
 def RemoveArgsN(
     *indices: int,
-) -> Callable[[...], Union[Tuple[Never], Generator[Any]]]:
+) -> Callable[[...], Union[Tuple[()], Generator[Any]]]:
     """Creates a functor that remove args.
 
     Parameters
@@ -172,7 +171,7 @@ def RemoveArgsN(
             )
         )
 
-    def __impl_rm_all_args(*args) -> Tuple[Never]:
+    def __impl_rm_all_args(*args) -> Tuple[()]:
         return tuple()
 
     def __impl_rm_args(*args) -> Generator[Any]:
