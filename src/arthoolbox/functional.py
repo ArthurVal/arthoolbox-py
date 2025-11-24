@@ -12,7 +12,6 @@ from functools import (
 )
 from typing import (
     Any,
-    List,
     Never,
     NoReturn,
     Text,
@@ -80,13 +79,13 @@ def DoNothing() -> Callable[[...], NoReturn]:
 
 
 def ForwardArgsN(
-    *indices: Tuple[int, ...],
+    *indices: int,
 ) -> Callable[[...], Union[Tuple[...], Any, Generator[Any]]]:
     """Creates a functor that forward args.
 
     Parameters
     ----------
-    *indices:
+    *indices: int
       If empty (no args given), forwards ALL args.
       If only 1 indices is given, forwards the VALUE `args[i]`.
       If there are more than 1 indices, yields `args[i]`.
@@ -116,13 +115,13 @@ def ForwardArgsN(
             )
         )
 
-    def __impl_fwd_all_args(*args: Tuple[...]) -> Tuple[...]:
+    def __impl_fwd_all_args(*args) -> Tuple[...]:
         return args
 
-    def __impl_fwd_one_arg(*args: Tuple[...]) -> Any:
+    def __impl_fwd_one_arg(*args) -> Any:
         return args[indices[0]] if indices[0] < len(args) else None
 
-    def __impl_fwd_mulitple_args(*args: Tuple[...]) -> Generator[Any]:
+    def __impl_fwd_mulitple_args(*args) -> Generator[Any]:
         return (args[i] for i in indices if i < len(args))
 
     if len(indices) == 0:
@@ -143,13 +142,13 @@ def ForwardArgsN(
 
 
 def RemoveArgsN(
-    *indices: Tuple[int, ...],
+    *indices: int,
 ) -> Callable[[...], Union[Tuple[Never], Generator[Any]]]:
     """Creates a functor that remove args.
 
     Parameters
     ----------
-    *indices:
+    *indices: int
       If empty, removes ALL args (empty tuple).
       Otherwise, yields `args[i]` for each i that are not in indices.
 
@@ -173,10 +172,10 @@ def RemoveArgsN(
             )
         )
 
-    def __impl_rm_all_args(*args: Tuple[...]) -> Tuple[Never]:
+    def __impl_rm_all_args(*args) -> Tuple[Never]:
         return tuple()
 
-    def __impl_rm_args(*args: Tuple[...]) -> Generator[Any]:
+    def __impl_rm_args(*args) -> Generator[Any]:
         return (arg for i, arg in enumerate(args) if i not in indices)
 
     if len(indices) == 0:
@@ -231,12 +230,12 @@ def Raises(err: T) -> Callable[[...], NoReturn]:
     return WithDescription(f=__impl, descr=f"Raises {err!r}")
 
 
-def All(*preds: List[Callable[[...], bool]]) -> Callable[[...], bool]:
+def All(*preds: Callable[[...], bool]) -> Callable[[...], bool]:
     """Predicates corresponding to a logical AND of all the given predicates.
 
     Parameters
     ----------
-    *preds: List[Callable[[...], bool]]
+    *preds: Callable[[...], bool]
       Predicates called until one of them returns FALSE
 
     Returns
@@ -256,12 +255,12 @@ def All(*preds: List[Callable[[...], bool]]) -> Callable[[...], bool]:
     )
 
 
-def Any(*preds: List[Callable[[...], bool]]) -> Callable[[...], bool]:
+def Any(*preds: Callable[[...], bool]) -> Callable[[...], bool]:
     """Predicates corresponding to a logical OR of all the given predicates.
 
     Parameters
     ----------
-    *preds: List[Callable[[...], bool]]
+    *preds: Callable[[...], bool]
       Predicates called until one of them returns TRUE
 
     Returns
@@ -499,7 +498,7 @@ def WhenFailing(
 
 
 def SequenciallyDo(
-    *callables: Tuple[Callable[[...], NoReturn], ...],
+    *callables: Callable[[...], NoReturn],
 ) -> Callable[[...], NoReturn]:
     """Creates a functor that call each callables with the same args.
 
@@ -509,7 +508,7 @@ def SequenciallyDo(
 
     Parameters
     ----------
-    *callables: List[Callable[[...], NoReturn]]
+    *callables: Callable[[...], NoReturn]
       All callables called with the same args/kwargs sequencially
 
     Returns
@@ -531,7 +530,7 @@ def SequenciallyDo(
 
 
 def Yields(
-    *callables: Tuple[Callable[[...], Any], ...],
+    *callables: Callable[[...], Any],
 ) -> Callable[[...], Generator[Any]]:
     """Creates a functor that yields all callables result called with the same args.
 
@@ -541,7 +540,7 @@ def Yields(
 
     Parameters
     ----------
-    *callables: Tuple[Callable[[...], NoReturn], ...]
+    *callables: Callable[[...], Any]
       All callables called with the same args/kwargs sequencially
 
     Returns
@@ -563,7 +562,7 @@ def Yields(
 
 def Pipe(
     f: Callable[[...], Any],
-    *others: List[Callable[[Any], Any]],
+    *others: Callable[[Any], Any],
 ) -> Callable[[...], Any]:
     """Creates a functor corresponding to a call pipeline of functions.
 
@@ -598,7 +597,10 @@ def Pipe(
     )
 
 
-def Before(f: Callable[[...], T], do: Callable[[...], NoReturn] = DoNothing()):
+def Before(
+    f: Callable[[...], T],
+    do: Callable[[...], NoReturn] = DoNothing(),
+):
     """Decorates `R = f(args...)` to perform actions BEFORE calling f.
 
     Parameters
