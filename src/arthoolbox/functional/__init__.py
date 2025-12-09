@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""TODO."""
+"""Add multiple functional tools to create/handle functors/callables/..."""
 
 from .core import (
     ReprWrapper,
