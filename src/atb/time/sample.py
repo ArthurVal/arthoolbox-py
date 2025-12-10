@@ -9,13 +9,14 @@ Decorators list:
 - sample | (opt) time_function | Compute mean period, stddev period, last_call
   delta T etc..
 """
+
 from functools import wraps
 from time import time
 
-from arthoolbox.math.statistics import OnlineStatistics
+from atb.math.statistics import OnlineStatistics
 
 
-def sample(_f=None, *, time_function=time.time):
+def sample(_f=None, *, time_function=time):
     """Compute timing parameters (mean/stddev period call) for a function.
 
     This class is a decorator use to sample the decorated function. It can be
@@ -32,7 +33,7 @@ def sample(_f=None, *, time_function=time.time):
     ---------
     last_call: float
         The last __get_time() returned value use to compute measurements
-    period: arthoolbox.math.statistics.OnlineStatistics
+    period: atb.math.statistics.OnlineStatistics
         OnlineStatistics object use to compute mean and variance online
 
     Parameters
@@ -54,8 +55,9 @@ def sample(_f=None, *, time_function=time.time):
 
             if wrapper_sample.last_call is not None:
                 # Register the new measurement
-                wrapper_sample.period.measurement = \
+                wrapper_sample.period.measurement = (
                     now - wrapper_sample.last_call
+                )
 
             wrapper_sample.last_call = now
 

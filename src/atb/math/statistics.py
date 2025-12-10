@@ -10,7 +10,7 @@ Functions list:
 Classes list:
 - OnlineStatistics | Automatically compute the stats of a specific measurement
 """
-from collections import namedtupled
+from collections import namedtuple
 from threading import Condition
 
 
@@ -159,7 +159,7 @@ class OnlineStatistics(object):
         The concatenated stats in one namedtuple
     """
 
-    CurrentStat = namedtupled(
+    CurrentStat = namedtuple(
         'Stats',
         ['n', 'X', 'Mean', 'Var', 'SVar']
     )
