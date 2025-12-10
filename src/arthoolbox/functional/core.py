@@ -12,9 +12,9 @@ from collections.abc import (
     Callable,
 )
 from typing import (
-    Concatenate,
     Text,
     Union,
+    Concatenate,
     ParamSpec,
     TypeVar,
 )
@@ -25,68 +25,6 @@ R = TypeVar("R")
 
 T = TypeVar("T")
 U = TypeVar("U")
-
-
-class ReprWrapper[**P, R]:
-    """Decorator that give the possibility to implement a better/custom repr().
-
-    May be usefull when declaring runtime functions/lambdas and give them a
-    better description that changes based on the context.
-    """
-
-    def __init__(
-        self,
-        f: Callable[P, R],
-        descr: Union[Text, Callable[[Callable[P, R]], Text]],
-    ) -> None:
-        """Create the decorator for the given callable.
-
-        Parameters
-        ----------
-        f: Callable[P, R]
-          Function being decorated.
-        descr: Union[Text, Callable[[Callable[P, R]],Text]]
-          Either a raw description string, that will always be returned
-          whenever calling `repr()`.
-          OR a callable that handle dynamic `repr()` values, called with `f`
-          eveytime in order to create the description.
-        """
-        update_wrapper(self, f)
-        self.__describe = lambda _: descr if isinstance(descr, Text) else descr
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Call the underlying wrapped callable."""
-        return self.__wrapped__(*args, **kwargs)
-
-    def __repr__(self) -> Text:
-        """Repre the underlying wrapepd callable."""
-        return self.__describe(self.__wrapped__)
-
-
-def with_repr(
-    descr: Union[Text, Callable[[Callable[P, R]], Text]],
-) -> Callable[[Callable[P, R]], ReprWrapper[P, R]]:
-    """Decorate any callable with a custom __repr__.
-
-    Note
-    ----
-    This is provided to fit the python's `@decorator` syntax. Prefer using
-    ReprWrapper direclty if necessary.
-
-    Parameters
-    ----------
-    descr: Union[Text, Callable[[Callable[P, R]],Text]]
-      Either a raw description string, that will always be returned
-      whenever calling `repr()`.
-      OR a callable that handle dynamic `repr()` values, called with `f`
-      eveytime in order to create the description.
-
-    Returns
-    -------
-    Callable[[Callable[P, R]], ReprWrapper[P, R]]
-      Decorator that create a ReprWrapper with the given descr.
-    """
-    return partial(ReprWrapper, descr=descr)
 
 
 def DoNothing(*args, **kwargs) -> None:
@@ -206,7 +144,6 @@ def After(
     -------
     Callable[P, R]
       Callable that decorates f with actions performed AFTER calling it
-
     """
 
     @wraps(f)
@@ -280,3 +217,69 @@ def rpartial(f, *args, **kwargs):
         return f(*fargs, *args, **(fkwargs | kwargs))
 
     return __wrapper
+
+
+class StringifyWrapper:
+    """Wrapper that give the possibility to implement a better/custom str().
+
+    May be usefull when declaring runtime functions/lambdas and give them a
+    better description that changes based on the context.
+    """
+
+    def __init__(
+        self,
+        f: Callable[P, R],
+        to_str: Union[Text, Callable[[Callable[P, R]], Text]],
+    ) -> None:
+        """Create the wrapper adding a custom __str__.
+
+        Parameters
+        ----------
+        f: Callable[P, R]
+          Wrapped function being decorated.
+        to_str: Union[Text, Callable[[Callable[P, R]],Text]]
+          Either a raw string, that will always be returned whenever calling
+          `str()`, OR, a callable that handle dynamic `str()` values, called
+          with `f` eveytime in order to create the description dynamically.
+        """
+        update_wrapper(self, f)
+        self.__to_str = Returns(to_str) if isinstance(to_str, Text) else to_str
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        """Call the underlying wrapped callable."""
+        return self.__wrapped__(*args, **kwargs)
+
+    def __str__(self) -> Text:
+        """Stringify the underlying wrapped callable."""
+        return self.__to_str(self.__wrapped__)
+
+    def __repr__(self) -> Text:
+        """Repr of the StringifyWrapper."""
+        return "StringifyWrapper(f={f}, to_str={to_str})".format(
+            f=repr(self.__wrapped__),
+            to_str=(
+                self.__to_str.__doc__
+                if self.__to_str.__doc__ is not None
+                else repr(self.__to_str)
+            ),
+        )
+
+
+def stringify(
+    s: Union[Text, Callable[[Callable[P, R]], Text]],
+) -> StringifyWrapper:
+    """Decorate a function to add a custom __str__() function.
+
+    Parameters
+    ----------
+    s: Union[Text, Callable[[Callable[P, R]],Text]]
+      Either a raw string, that will always be returned whenever calling
+      `str()`, OR, a function that handle dynamic `str()` values, called
+      with the function eveytime in order to create the description dynamically
+
+    Returns
+    -------
+    StringifyWrapper
+      A wrapper use to decorate any callable/function.
+    """
+    return partial(StringifyWrapper, to_str=s)
