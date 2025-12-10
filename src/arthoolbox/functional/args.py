@@ -2,6 +2,10 @@
 
 """Functional tools for any conditional operations."""
 
+from .core import (
+    Brief,
+)
+
 from dataclasses import (
     dataclass,
     KW_ONLY,
@@ -200,13 +204,6 @@ def _(
     return __impl
 
 
-def __brief(f: Any) -> Text:
-    if f.__doc__ is None:
-        return repr(f)
-    else:
-        return f.__doc__.partition("\n")[0].removeprefix("Forward ")
-
-
 @ForwardArg.register(Iterable)
 def _(
     sels: Iterable[Any],
@@ -221,7 +218,10 @@ def _(
     __impl.__doc__ = "Forward: {args}".format(
         args=", ".join(
             (
-                f"({i}) {__brief(get_arg)}"
+                "({i}) {what}".format(
+                    i=i,
+                    what=Brief(get_arg).removeprefix("Forward "),
+                )
                 for i, get_arg in enumerate(dispatchers)
             )
         )

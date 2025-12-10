@@ -3,6 +3,7 @@
 """Functional tools for any conditional operations."""
 
 from .core import (
+    Brief,
     DoNothing,
 )
 
@@ -11,7 +12,6 @@ from collections.abc import (
 )
 from typing import (
     Any,
-    Text,
     Concatenate,
     Union,
     TypeVar,
@@ -22,13 +22,6 @@ P = ParamSpec("P")
 
 T = TypeVar("T")
 U = TypeVar("U")
-
-
-def __brief(f: Any) -> Text:
-    if f.__doc__ is None:
-        return repr(f)
-    else:
-        return f.__doc__.partition("\n")[0].removesuffix(".")
 
 
 def When(
@@ -61,9 +54,9 @@ def When(
             return otherwise(*args, **kwargs)
 
     __impl.__doc__ = "When '{pred}', do '{do}'. Otherwise '{otherwise}'".format(
-        pred=__brief(pred),
-        do=__brief(do),
-        otherwise=__brief(otherwise),
+        pred=Brief(pred),
+        do=Brief(do),
+        otherwise=Brief(otherwise),
     )
 
     return __impl
@@ -103,9 +96,9 @@ def WhenFailing(
         return r
 
     __impl.__doc__ = "When '{f}' raises {error_type}, do '{do}'".format(
-        f=__brief(f),
+        f=Brief(f),
         error_type=error_type,
-        do=__brief(do),
+        do=Brief(do),
     )
 
     return __impl

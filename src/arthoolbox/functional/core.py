@@ -12,6 +12,7 @@ from collections.abc import (
     Callable,
 )
 from typing import (
+    Any,
     Text,
     Union,
     Concatenate,
@@ -27,12 +28,20 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
+def Brief(obj: Any) -> Text:
+    """Return the brief of obj's docstring."""
+    if obj.__doc__ is None:
+        return repr(obj)
+    else:
+        return obj.__doc__.partition("\n")[0]
+
+
 def DoNothing(*args, **kwargs) -> None:
     """Do Nothing."""
     pass
 
 
-def Returns(v: T) -> Callable[[...], T]:
+def Returns(v: T) -> Callable[P, T]:
     """Create a functor that ALWAYS returns v.
 
     Parameters
@@ -46,7 +55,7 @@ def Returns(v: T) -> Callable[[...], T]:
       A callable that ignore args and ALWAYS returns v.
     """
 
-    def __impl(*args, **kwargs) -> T:
+    def __impl(*args: P.args, **kwargs: P.kwargs) -> T:
         return v
 
     __impl.__doc__ = f"Returns {v!r}"

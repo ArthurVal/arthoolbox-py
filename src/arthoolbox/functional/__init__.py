@@ -3,6 +3,7 @@
 """Add multiple functional tools to create/handle functors/callables/..."""
 
 from .core import (
+    Brief,
     DoNothing,
     Returns,
     Raises,
@@ -32,6 +33,7 @@ from .sequence import (
 
 __all__ = [
     # core
+    "Brief",
     "DoNothing",
     "Returns",
     "Raises",
