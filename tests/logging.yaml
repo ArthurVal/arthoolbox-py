@@ -18,7 +18,7 @@ handlers:
   #   filename: logs/test.log
 
 root:
-    level: NOTSET
+    level: DEBUG
     handlers: [console]
     propogate: yes
 
