@@ -89,20 +89,9 @@ def with_repr(
     return partial(ReprWrapper, descr=descr)
 
 
-def DoNothing() -> Callable[[...], None]:
-    """Create a functor that does nothing (ignore args).
-
-    Returns
-    -------
-    Callable[[...], None]
-      A callable that ignore args and do nothing.
-    """
-
-    @with_repr("Do nothing")
-    def __impl(*args, **kwargs) -> None:
-        pass
-
-    return __impl
+def DoNothing(*args, **kwargs) -> None:
+    """Do Nothing."""
+    pass
 
 
 def Returns(v: T) -> Callable[[...], T]:
@@ -119,9 +108,10 @@ def Returns(v: T) -> Callable[[...], T]:
       A callable that ignore args and ALWAYS returns v.
     """
 
-    @with_repr(f"Returns {v!r}")
     def __impl(*args, **kwargs) -> T:
         return v
+
+    __impl.__doc__ = f"Returns {v!r}"
 
     return __impl
 
@@ -140,9 +130,10 @@ def Raises(err: T) -> Callable[[...], None]:
       A callable that ignore args and ALWAYS raises err
     """
 
-    @with_repr(f"Raises {err!r}")
     def __impl(*args, **kwargs) -> None:
         raise err
+
+    __impl.__doc__ = f"Raises {err!r}"
 
     return __impl
 
@@ -282,7 +273,7 @@ def Decorate(
 
 
 def rpartial(f, *args, **kwargs):
-    """Same as funtools.partial but prepends instead of appending args."""
+    """Do the same as funtools.partial (prepends instead of appending args)."""
 
     @wraps(f)
     def __wrapper(*fargs, **fkwargs):
