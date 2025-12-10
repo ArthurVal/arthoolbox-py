@@ -51,7 +51,7 @@ def Returns(v: T) -> Callable[P, T]:
 
     Returns
     -------
-    Callable[[...], T]
+    Callable[P, T]
       A callable that ignore args and ALWAYS returns v.
     """
 
@@ -63,7 +63,7 @@ def Returns(v: T) -> Callable[P, T]:
     return __impl
 
 
-def Raises(err: T) -> Callable[[...], None]:
+def Raises(err: T) -> Callable[P, None]:
     """Create a functor that raises err.
 
     Parameters
@@ -73,11 +73,11 @@ def Raises(err: T) -> Callable[[...], None]:
 
     Returns
     -------
-    Callable[[...], None]
+    Callable[P, None]
       A callable that ignore args and ALWAYS raises err
     """
 
-    def __impl(*args, **kwargs) -> None:
+    def __impl(*args: P.args, **kwargs: P.kwargs) -> None:
         raise err
 
     __impl.__doc__ = f"Raises {err!r}"
@@ -266,11 +266,7 @@ class StringifyWrapper:
         """Repr of the StringifyWrapper."""
         return "StringifyWrapper(f={f}, to_str={to_str})".format(
             f=repr(self.__wrapped__),
-            to_str=(
-                self.__to_str.__doc__
-                if self.__to_str.__doc__ is not None
-                else repr(self.__to_str)
-            ),
+            to_str=Brief(self.__to_str),
         )
 
 
