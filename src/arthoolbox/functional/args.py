@@ -150,7 +150,7 @@ def _(
     else:
 
         def __impl(*args: P.args, **kwargs: P.kwargs) -> Union[Any, T]:
-            return args[i] if i < len(args) else default
+            return args[i] if (-len(args) <= i < len(args)) else default
 
         __impl.__doc__ = f"Forward arg[{i}] (default to {default})"
 
@@ -160,27 +160,16 @@ def _(
 @ForwardArg.register
 def _(
     s: slice,
-    *,
-    default: T = NotSet,
+    *sargs,
+    **skwargs,
 ) -> Union[
     Callable[P, Tuple[Any, ...]],
     Callable[P, Union[Tuple[Any, ...], T]],
 ]:
-    if default == NotSet:
+    def __impl(*args: P.args, **kwargs: P.kwargs) -> Tuple[Any, ...]:
+        return args[s]
 
-        def __impl(*args: P.args, **kwargs: P.kwargs) -> Tuple[Any, ...]:
-            return args[s]
-
-        __impl.__doc__ = f"Forward arg[{s}]"
-
-    else:
-
-        def __impl(
-            *args: P.args, **kwargs: P.kwargs
-        ) -> Union[Tuple[Any, ...], T]:
-            return args[s] if s < len(args) else default
-
-        __impl.__doc__ = f"Forward arg[{s}] (default to {default})"
+    __impl.__doc__ = f"Forward arg[{s}]"
 
     return __impl
 
