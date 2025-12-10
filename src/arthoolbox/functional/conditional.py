@@ -3,7 +3,6 @@
 """Functional tools for any conditional operations."""
 
 from .core import (
-    with_repr,
     DoNothing,
 )
 
@@ -12,6 +11,7 @@ from collections.abc import (
 )
 from typing import (
     Any,
+    Text,
     Concatenate,
     Union,
     TypeVar,
@@ -24,10 +24,17 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
+def __brief(f: Any) -> Text:
+    if f.__doc__ is None:
+        return repr(f)
+    else:
+        return f.__doc__.partition("\n")[0].removesuffix(".")
+
+
 def When(
     pred: Callable[P, bool],
     do: Callable[P, T],
-    otherwise: Callable[P, U] = DoNothing(),
+    otherwise: Callable[P, U] = DoNothing,
 ) -> Callable[P, Union[T, U]]:
     """Call either `R = do(..)` or `R = otherwise(...)` based on `pred(...)`.
 
@@ -47,12 +54,17 @@ def When(
       based on `pred(...)`
     """
 
-    @with_repr(f"When '{pred!r}', do '{do!r}'. Otherwise '{otherwise!r}'")
     def __impl(*args: P.args, **kwargs: P.kwargs) -> Union[T, U]:
         if pred(*args, **kwargs):
             return do(*args, **kwargs)
         else:
             return otherwise(*args, **kwargs)
+
+    __impl.__doc__ = "When '{pred}', do '{do}'. Otherwise '{otherwise}'".format(
+        pred=__brief(pred),
+        do=__brief(do),
+        otherwise=__brief(otherwise),
+    )
 
     return __impl
 
@@ -82,7 +94,6 @@ def WhenFailing(
 
     """
 
-    @with_repr(f"When '{f!r}' raises {error_type}, do '{do!r}'")
     def __impl(*args: P.args, **kwargs: P.kwargs) -> Union[T, U]:
         try:
             r = f(*args, **kwargs)
@@ -90,5 +101,11 @@ def WhenFailing(
             r = do(err, *args, **kwargs)
 
         return r
+
+    __impl.__doc__ = "When '{f}' raises {error_type}, do '{do}'".format(
+        f=__brief(f),
+        error_type=error_type,
+        do=__brief(do),
+    )
 
     return __impl
