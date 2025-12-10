@@ -66,6 +66,39 @@ def ForwardArg(sel, *args, **kwargs):
     Also, the selection can be any Iterable that will be used to forward
     multiple arguments, accodinging to the list of select arguments given.
 
+    Examples
+    --------
+    - Select 1 arg by index:
+    >>> fwd_arg_2 = ForwardArg(2)
+    >>> fwd_arg_2("a", "b", "c", "d", foo=42)
+    'c'
+    >>> fwd_arg_2.__doc__
+    'Forward arg[2]'
+
+    - Select 1 arg by key:
+    >>> fwd_kwarg_foo = ForwardArg("foo")
+    >>> fwd_kwarg_foo(1, 2, 3, foo="Coucou")
+    'Coucou'
+    >>> fwd_kwarg_foo(1, 2, 3, bar="Coucou")
+    KeyError: 'foo'
+
+    - Select 1 arg with default:
+    >>> fwd_kwarg_foo = ForwardArg("foo", default=32)
+    >>> fwd_kwarg_foo(1, 2, 3, bar="Coucou")
+    32
+    >>> fwd_kwarg_foo.__doc__
+    "Forward kwarg['foo'] (default to 32)"
+
+    - Select arg with index' slice:
+    >>> fwd_even_args = ForwardArg(slice(0, -1, 2))
+    >>> fwd_even_args(0, "a", 2, 3, 4, 5)
+    (0, 2, 4)
+
+    - Select multiple args:
+    >>> fwd_args = ForwardArg((1, "foo", 0))
+    >>> list(fwd_args(0, "a", 2, 3, 4, foo=5))
+    ['a', 5, 0]
+
 
     Parameters
     ----------
@@ -76,7 +109,6 @@ def ForwardArg(sel, *args, **kwargs):
     -------
     Callable[P, Any]
       The functor that forward args by index, slice or key
-
     """
     raise TypeError(f"Unknown arg selection {sel!r} (type: {type(sel)})")
 
