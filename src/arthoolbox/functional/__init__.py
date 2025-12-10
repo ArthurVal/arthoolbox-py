@@ -3,8 +3,6 @@
 """Add multiple functional tools to create/handle functors/callables/..."""
 
 from .core import (
-    ReprWrapper,
-    with_repr,
     DoNothing,
     Returns,
     Raises,
@@ -12,11 +10,12 @@ from .core import (
     After,
     Decorate,
     rpartial,
+    StringifyWrapper,
+    stringify,
 )
 
 from .args import (
-    AtIdx,
-    WithKey,
+    ArgAt,
     ForwardArg,
 )
 
@@ -33,8 +32,6 @@ from .sequence import (
 
 __all__ = [
     # core
-    "ReprWrapper",
-    "with_repr",
     "DoNothing",
     "Returns",
     "Raises",
@@ -42,9 +39,10 @@ __all__ = [
     "After",
     "Decorate",
     "rpartial",
+    "StringifyWrapper",
+    "stringify",
     # args
-    "AtIdx",
-    "WithKey",
+    "ArgAt",
     "ForwardArg",
     # conditional
     "When",
