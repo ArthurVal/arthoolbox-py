@@ -13,6 +13,7 @@ from functools import (
 from collections.abc import (
     Callable,
     Iterable,
+    Generator,
 )
 from typing import (
     Any,
@@ -86,10 +87,11 @@ def _(
     *,
     default: T = NotSet,
 ) -> Union[
-    Callable[P, Any],
-    Callable[P, Tuple[Any, ...]],
-    Callable[P, Union[Any, T]],
-    Callable[P, Union[Tuple[Any, ...], T]],
+    Callable[P, Any],  # int or key
+    Callable[P, Union[Any, T]],  # int or key with default
+    Callable[P, Tuple[Any, ...]],  # slice
+    Callable[P, Union[Tuple[Any, ...], T]],  # slice with default
+    Callable[P, Generator[Any]],  # Iterable
 ]:
     return ForwardArg(
         arg.sel,
@@ -177,26 +179,27 @@ def _(
     return __impl
 
 
+def __brief(f: Any) -> Text:
+    if f.__doc__ is None:
+        return repr(f)
+    else:
+        return f.__doc__.partition("\n")[0].removeprefix("Forward ")
+
+
 @ForwardArg.register(Iterable)
 def _(
     sels: Iterable[Any],
     *,
     default: T = NotSet,
-) -> Union[Callable[P, Tuple[Any, ...]],]:
+) -> Callable[P, Generator[Any]]:
     getters = [ForwardArg(a, default=default) for a in sels]
 
-    def __impl(*args: P.args, **kwargs: P.kwargs) -> Tuple[Any, ...]:
-        return tuple(get(*args, **kwargs) for get in getters)
+    def __impl(*args: P.args, **kwargs: P.kwargs) -> Generator[Any]:
+        return (get(*args, **kwargs) for get in getters)
 
     __impl.__doc__ = "Forward: {args}".format(
         args=", ".join(
-            (
-                "({i}) {what}".format(
-                    i=i,
-                    what=get_arg.__doc__.removeprefix("Forward "),
-                )
-                for i, get_arg in enumerate(getters)
-            )
+            (f"({i}) {__brief(get_arg)}" for i, get_arg in enumerate(getters))
         )
     )
 
