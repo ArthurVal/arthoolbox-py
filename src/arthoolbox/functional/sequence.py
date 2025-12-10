@@ -47,7 +47,7 @@ def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
             f(*args, **kwargs)
 
     __impl.__doc__ = "Sequencially do: {seq}".format(
-        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables))),
+        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables)))
     )
 
     return __impl
@@ -77,7 +77,7 @@ def Yields(*callables: Callable[P, Any]) -> Callable[P, Generator[Any]]:
         return (f(*args, **kwargs) for f in callables)
 
     __impl.__doc__ = "Yields: {seq}".format(
-        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables))),
+        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables)))
     )
 
     return __impl
