@@ -28,7 +28,7 @@ loggers:
     propagate: yes
 
 # ---------- ATB
-  tests.arthoolbox.
+  tests.arthoolbox:
     level: DEBUG
     propagate: yes
 
