@@ -213,14 +213,17 @@ def _(
     *,
     default: T = NotSet,
 ) -> Callable[P, Generator[Any]]:
-    getters = [ForwardArg(a, default=default) for a in sels]
+    dispatchers = [ForwardArg(a, default=default) for a in sels]
 
     def __impl(*args: P.args, **kwargs: P.kwargs) -> Generator[Any]:
-        return (get(*args, **kwargs) for get in getters)
+        return (fwd(*args, **kwargs) for fwd in dispatchers)
 
     __impl.__doc__ = "Forward: {args}".format(
         args=", ".join(
-            (f"({i}) {__brief(get_arg)}" for i, get_arg in enumerate(getters))
+            (
+                f"({i}) {__brief(get_arg)}"
+                for i, get_arg in enumerate(dispatchers)
+            )
         )
     )
 
