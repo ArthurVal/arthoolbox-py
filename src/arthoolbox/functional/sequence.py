@@ -8,10 +8,18 @@ from collections.abc import (
 )
 from typing import (
     Any,
+    Text,
     ParamSpec,
 )
 
 P = ParamSpec("P")
+
+
+def __brief(f: Any) -> Text:
+    if f.__doc__ is None:
+        return repr(f)
+    else:
+        return f.__doc__.partition("\n")[0].removesuffix(".")
 
 
 def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
@@ -39,7 +47,7 @@ def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
             f(*args, **kwargs)
 
     __impl.__doc__ = "Sequencially do: {seq}".format(
-        seq=", ".join((f"({i}) {f!r}" for i, f in enumerate(callables))),
+        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables))),
     )
 
     return __impl
@@ -69,7 +77,7 @@ def Yields(*callables: Callable[P, Any]) -> Callable[P, Generator[Any]]:
         return (f(*args, **kwargs) for f in callables)
 
     __impl.__doc__ = "Yields: {seq}".format(
-        seq=", ".join((f"({i}) {f!r}" for i, f in enumerate(callables))),
+        seq=", ".join((f"({i}) {__brief(f)}" for i, f in enumerate(callables))),
     )
 
     return __impl
@@ -103,7 +111,9 @@ def Pipe(
         return r
 
     __impl.__doc__ = "Pipeline that: {seq}".format(
-        seq=" | ".join((f"({i}) {f!r}" for i, f in enumerate((f,) + others))),
+        seq=" | ".join(
+            (f"({i}) {__brief(f)}" for i, f in enumerate((f,) + others))
+        ),
     )
 
     return __impl
