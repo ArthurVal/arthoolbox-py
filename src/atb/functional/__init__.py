@@ -26,6 +26,11 @@ from .decorate import (
     Decorate,
 )
 
+from .hooks import (
+    HookWrapper,
+    hookable,
+)
+
 from .sequence import (
     SequenciallyDo,
     Pipe,
@@ -54,6 +59,9 @@ __all__ = [
     "Before",
     "After",
     "Decorate",
+    # hooks
+    "HookWrapper",
+    "hookable",
     # sequence
     "SequenciallyDo",
     "Pipe",
