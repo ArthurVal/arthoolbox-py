@@ -15,11 +15,17 @@ from collections.abc import (
 )
 from typing import (
     Concatenate,
+    ParamSpec,
+    TypeVar,
+    Generic,
 )
+
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 @dataclass(frozen=True)
-class Hooks[R, **P]:
+class Hooks(Generic(P, R)):
     """Container for all different hook available."""
 
     pre: list[Callable[P, None]] = field(default_factory=list)
@@ -32,7 +38,7 @@ class Hooks[R, **P]:
     )
 
 
-class HookWrapper[R, **P]:
+class HookWrapper(Generic(P, R)):
     """Decorator that wraps any callable with hooks.
 
     The hooks can be updated through the `.hooks` attributs, giving access to
@@ -104,7 +110,7 @@ class HookWrapper[R, **P]:
         return r
 
 
-def hookable[R, **P](f: Callable[P, R]) -> HookWrapper[R, P]:
+def hookable(f: Callable[P, R]) -> HookWrapper[R, P]:
     """Decorate any callable with hooks.
 
     See HookWrapper for more details.
