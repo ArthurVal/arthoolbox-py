@@ -15,6 +15,8 @@ from collections.abc import (
 )
 from typing import (
     Concatenate,
+    ParamSpec,
+    TypeVar,
 )
 
 
@@ -104,9 +106,9 @@ class HookWrapper[R, **P]:
         return r
 
 
-def hookable():
+def hookable[R, **P](f: Callable[P, R]) -> HookWrapper[R, P]:
     """Decorate any callable with hooks.
 
     See HookWrapper for more details.
     """
-    return HookWrapper
+    return HookWrapper[R, P](f)
