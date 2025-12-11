@@ -216,10 +216,10 @@ class HookWrapper(Generic[P, R]):
     def __init__(self, f: Callable[P, R]):
         """Construct the wrapper from a given callable."""
         update_wrapper(self, f)
-        self.__hooks = Hooks()
+        self.__hooks = Hooks[P, R]()
 
     @property
-    def hooks(self) -> Hooks:
+    def hooks(self) -> Hooks[P, R]:
         """Access the underlying hooks."""
         return self.__hooks
 
@@ -229,7 +229,7 @@ class HookWrapper(Generic[P, R]):
             f(*args, **kwargs)
 
         try:
-            r = self.__wrapped__(*args, **kwargs)
+            r: R = self.__wrapped__(*args, **kwargs)
 
         except Exception as err:
             for f in self.hooks.post_failure:
