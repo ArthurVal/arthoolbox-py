@@ -3,16 +3,11 @@
 """Add multiple functional tools to create/handle functors/callables/..."""
 
 from .core import (
+    rpartial,
     Brief,
     DoNothing,
     Returns,
     Raises,
-    Before,
-    After,
-    Decorate,
-    rpartial,
-    StringifyWrapper,
-    stringify,
 )
 
 from .args import (
@@ -25,32 +20,45 @@ from .conditional import (
     WhenFailing,
 )
 
+from .decorate import (
+    Before,
+    After,
+    Decorate,
+)
+
 from .sequence import (
     SequenciallyDo,
     Pipe,
     Yields,
 )
 
+from .stringify import (
+    StringifyWrapper,
+    stringify,
+)
+
 __all__ = [
     # core
+    "rpartial",
     "Brief",
     "DoNothing",
     "Returns",
     "Raises",
-    "Before",
-    "After",
-    "Decorate",
-    "rpartial",
-    "StringifyWrapper",
-    "stringify",
     # args
     "ArgAt",
     "ForwardArg",
     # conditional
     "When",
     "WhenFailing",
+    # decorate
+    "Before",
+    "After",
+    "Decorate",
     # sequence
     "SequenciallyDo",
     "Pipe",
     "Yields",
+    # stringify
+    "StringifyWrapper",
+    "stringify",
 ]
