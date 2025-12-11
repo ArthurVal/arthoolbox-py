@@ -20,13 +20,10 @@ from .conditional import (
     WhenFailing,
 )
 
-from .decorate import (
+from .hooks import (
     Before,
     After,
     Decorate,
-)
-
-from .hooks import (
     HookWrapper,
     hookable,
 )
@@ -55,11 +52,10 @@ __all__ = [
     # conditional
     "When",
     "WhenFailing",
-    # decorate
+    # hooks
     "Before",
     "After",
     "Decorate",
-    # hooks
     "HookWrapper",
     "hookable",
     # sequence
