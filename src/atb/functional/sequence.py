@@ -18,8 +18,20 @@ from typing import (
 P = ParamSpec("P")
 
 
-def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
+def Tee(*callables: Callable[P, None]) -> Callable[P, None]:
     """Create a functor that call each callables with the same args.
+
+    Create a 'tee' from the given args as follow:
+    A -*--> F[0](A)
+       |
+       *--> F[1](A)
+       |
+       *--> F[2](A)
+       .
+       .
+       |
+       *--> F[N](A)
+
 
     Notes
     -----
@@ -34,7 +46,7 @@ def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
 
     Returns
     -------
-    Callable[P, NoReturn]
+    Callable[P, None]
       A callable that perform the sequencial calls.
     """
 
@@ -51,6 +63,9 @@ def SequenciallyDo(*callables: Callable[P, None]) -> Callable[P, None]:
 
 def Yields(*callables: Callable[P, Any]) -> Callable[P, Generator[Any]]:
     """Create a functor that yields all callables' result sequencially.
+
+    Equivalent to:
+    A --> (F[0](A), F[1](A), ..., F[N](A))
 
     Notes
     -----
@@ -84,6 +99,12 @@ def Pipe(
     *others: Callable[[Any], Any],
 ) -> Callable[P, Any]:
     """Create a functor corresponding to a call pipeline of functions.
+
+    Equivalent to:
+    A --> F[N](F[1](F[0](A)))
+
+    i.e.:
+    A --> F[0](A) = R[0] -> F[1](R[0]) = R[1] -> ... -> F[N](R[N-1])
 
     Parameters
     ----------

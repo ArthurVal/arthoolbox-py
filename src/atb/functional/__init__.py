@@ -29,7 +29,7 @@ from .hooks import (
 )
 
 from .sequence import (
-    SequenciallyDo,
+    Tee,
     Pipe,
     Yields,
 )
@@ -59,7 +59,7 @@ __all__ = [
     "HookWrapper",
     "hookable",
     # sequence
-    "SequenciallyDo",
+    "Tee",
     "Pipe",
     "Yields",
     # stringify
